@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQuickStyle>
 
 int main(int argc, char *argv[])
 {
@@ -7,6 +8,7 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
+    QQuickStyle::setStyle("Material");
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;

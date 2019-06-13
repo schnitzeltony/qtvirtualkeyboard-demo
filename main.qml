@@ -4,6 +4,7 @@ import QtQuick.VirtualKeyboard 2.4
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
+import QtQuick.Controls.Material 2.12
 
 ApplicationWindow {
     id: window
@@ -11,6 +12,9 @@ ApplicationWindow {
     width: 640
     height: 480
     title: qsTr("Virtual Keyboard Example")
+
+    Material.theme: Material.Dark
+    Material.accent: Material.color(Material.Green)
 
     Flickable {
         id: flickable
@@ -37,7 +41,7 @@ ApplicationWindow {
                     id: button
                     text: "Button"
                 }
-                TextInput {
+                TextField {
                     id: textInput
                     text: "TextInput" + modelData
                 }
