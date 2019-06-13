@@ -25,8 +25,8 @@ ApplicationWindow {
         interactive: false
         NumberAnimation on contentY
         {
-            id: flickableAnimation
             duration: 300
+            id: flickableAnimation
         }
 
         // Dummy test content
@@ -56,7 +56,20 @@ ApplicationWindow {
          property bool textEntered: Qt.inputMethod.visible
          // Hmm - why is this necessary?
          property real realHeight: height/1.65
-         visible: textEntered // remove??
+         visible: textEntered
+         opacity: 0
+         NumberAnimation on opacity
+         {
+             id: keyboardAnimation
+             onStarted: {
+                 if(to === 1)
+                    inputPanel.visible = inputPanel.textEntered
+             }
+             onFinished: {
+                 if(to === 0)
+                    inputPanel.visible = inputPanel.textEntered
+             }
+         }
          onTextEnteredChanged: {
              var rectInput = Qt.inputMethod.anchorRectangle
              if (inputPanel.textEntered)
@@ -65,7 +78,10 @@ ApplicationWindow {
                 {
                     flickableAnimation.to = rectInput.bottom - inputPanel.y + 5
                     flickableAnimation.start()
-                 }
+                }
+                keyboardAnimation.to = 1
+                keyboardAnimation.duration = 500
+                keyboardAnimation.start()
              }
              else
              {
@@ -73,7 +89,10 @@ ApplicationWindow {
                  {
                      flickableAnimation.to = 0
                      flickableAnimation.start()
-                  }
+                 }
+                 keyboardAnimation.to = 0
+                 keyboardAnimation.duration = 0
+                 keyboardAnimation.start()
              }
          }
     }
