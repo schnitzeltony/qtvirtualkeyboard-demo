@@ -81,7 +81,7 @@ ApplicationWindow {
              {
                 if(rectInput.bottom > inputPanel.y)
                 {
-                    flickableAnimation.to = rectInput.bottom - inputPanel.y + 5
+                    flickableAnimation.to = rectInput.bottom - inputPanel.y + 10
                     flickableAnimation.start()
                 }
                 keyboardAnimation.to = 1
