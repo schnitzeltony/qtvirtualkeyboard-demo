@@ -43,6 +43,7 @@ KeyboardLayout {
         Layout.fillHeight: true
         Layout.alignment: Qt.AlignHCenter
         Layout.preferredWidth: height*5/4
+        // Row1
         KeyboardRow {
             Key {
                 key: Qt.Key_7
@@ -63,6 +64,7 @@ KeyboardLayout {
                 showPreview: false
             }
         }
+        // Row2
         KeyboardRow {
             Key {
                 key: Qt.Key_4
@@ -84,6 +86,7 @@ KeyboardLayout {
             BackspaceKey {
             }
         }
+        // Row3
         KeyboardRow {
             Key {
                 key: Qt.Key_1
@@ -110,6 +113,7 @@ KeyboardLayout {
                 repeat: true
             }
         }
+        // Row4
         KeyboardRow {
             Key {
                 key: Qt.Key_Minus
