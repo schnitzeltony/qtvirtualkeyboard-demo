@@ -44,10 +44,16 @@ ApplicationWindow {
                 TextField {
                     id: textInputAlNum
                     text: "AlphaNum" + modelData
+                    Keys.onEscapePressed: {
+                      focus = false
+                    }
                 }
                 TextField {
                     id: textInputNum
                     text: "Num" + modelData
+                    Keys.onEscapePressed: {
+                      focus = false
+                    }
                     inputMethodHints: Qt.ImhDigitsOnly
                 }
             }
