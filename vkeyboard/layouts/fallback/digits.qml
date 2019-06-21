@@ -32,6 +32,7 @@ import QtQuick.Layouts 1.0
 import QtQuick.VirtualKeyboard 2.1
 import QtQuick.VirtualKeyboard.Plugins 2.3
 import QtQuick.VirtualKeyboard.Styles 2.2
+import QtQuick.VirtualKeyboard.Settings 2.2
 import "qrc:/vkeyboard" as VKEYB
 
 KeyboardLayout {
@@ -58,10 +59,11 @@ KeyboardLayout {
                 text: "9"
             }
             VKEYB.DarkKey {
-                key: Qt.Key_Escape
-                displayText: "Esc"
-                weight: 2
                 showPreview: false
+                key: Qt.Key_End
+                text: "End"
+            }
+            BackspaceKey {
             }
         }
         // Row2
@@ -78,12 +80,8 @@ KeyboardLayout {
                 key: Qt.Key_6
                 text: "6"
             }
-            VKEYB.DarkKey {
-                showPreview: false
-                key: Qt.Key_End
-                text: "End"
-            }
-            BackspaceKey {
+            EnterKey {
+                weight: 2
             }
         }
         // Row3
@@ -101,16 +99,10 @@ KeyboardLayout {
                 text: "3"
             }
             VKEYB.DarkKey {
-                displayText: "\u2190"
-                key: Qt.Key_Left
+                key: Qt.Key_Escape
+                displayText: "Esc"
+                weight: 2
                 showPreview: false
-                repeat: true
-            }
-            VKEYB.DarkKey {
-                text: "\u2192"
-                key: Qt.Key_Right
-                showPreview: false
-                repeat: true
             }
         }
         // Row4
@@ -126,11 +118,20 @@ KeyboardLayout {
             Key {
                 // The decimal key, if it is not "," then we fallback to
                 // "." in case it is an unhandled different result
-                key: GC.locale.decimalPoint === "," ? Qt.Key_Comma : Qt.Key_Period
-                text: GC.locale.decimalPoint === "," ? "," : "."
+                key: VirtualKeyboardSettings.locale.decimalPoint === "," ? Qt.Key_Comma : Qt.Key_Period
+                text: VirtualKeyboardSettings.locale.decimalPoint === "," ? "," : "."
             }
-            EnterKey {
-                weight: 2
+            VKEYB.DarkKey {
+                displayText: "\u2190"
+                key: Qt.Key_Left
+                showPreview: false
+                repeat: true
+            }
+            VKEYB.DarkKey {
+                text: "\u2192"
+                key: Qt.Key_Right
+                showPreview: false
+                repeat: true
             }
         }
     }
