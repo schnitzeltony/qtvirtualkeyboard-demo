@@ -42,8 +42,13 @@ ApplicationWindow {
                     text: "Button"
                 }
                 TextField {
-                    id: textInput
-                    text: "TextInput" + modelData
+                    id: textInputAlNum
+                    text: "AlphaNum" + modelData
+                }
+                TextField {
+                    id: textInputNum
+                    text: "Num" + modelData
+                    inputMethodHints: Qt.ImhDigitsOnly
                 }
             }
         }
