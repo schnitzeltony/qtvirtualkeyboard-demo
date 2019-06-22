@@ -6,6 +6,7 @@ import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.VirtualKeyboard.Settings 2.2
+import "qrc:/qml/controls" as CONTROLS
 
 ApplicationWindow {
     id: window
@@ -56,14 +57,11 @@ ApplicationWindow {
                     id: button
                     text: "Button"
                 }
-                TextField {
+                CONTROLS.TextFieldEx {
                     id: textInputAlNum
                     text: "AlphaNum" + modelData
-                    Keys.onEscapePressed: {
-                      focus = false
-                    }
                 }
-                TextField {
+                CONTROLS.TextFieldEx {
                     id: textInputNum
                     text: "Num" + modelData
                     Keys.onEscapePressed: {
