@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
+        <file>qml/main.qml</file>
         <file>vkeyboard/DarkKey.qml</file>
         <file>vkeyboard/layouts/de_DE/digits.fallback</file>
         <file>vkeyboard/layouts/de_DE/main.qml</file>
