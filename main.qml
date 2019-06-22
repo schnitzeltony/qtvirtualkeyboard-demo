@@ -5,6 +5,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
+import QtQuick.VirtualKeyboard.Settings 2.2
 
 ApplicationWindow {
     id: window
@@ -28,11 +29,22 @@ ApplicationWindow {
             duration: 300
             id: flickableAnimation
         }
-
+        // Select language
+        ComboBox {
+            id: langCombo
+            width: 200
+            model: [ "en_GB", "de_DE" ]
+            onCurrentTextChanged: {
+                VirtualKeyboardSettings.locale = langCombo.currentText
+            }
+        }
         // Dummy test content
         ListView{
-            id: listView
-            anchors.fill: parent
+            id: listViewControls
+            anchors.top: langCombo.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
             model: 11
             interactive: false
             delegate: RowLayout {
