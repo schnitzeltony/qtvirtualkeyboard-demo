@@ -59,11 +59,10 @@ KeyboardLayout {
                 text: "9"
             }
             VKEYB.DarkKey {
+                key: Qt.Key_Escape
+                displayText: "Esc"
+                weight: 2
                 showPreview: false
-                key: Qt.Key_End
-                text: "End"
-            }
-            BackspaceKey {
             }
         }
         // Row2
@@ -99,10 +98,11 @@ KeyboardLayout {
                 text: "3"
             }
             VKEYB.DarkKey {
-                key: Qt.Key_Escape
-                displayText: "Esc"
-                weight: 2
                 showPreview: false
+                key: Qt.Key_End
+                text: "End"
+            }
+            BackspaceKey {
             }
         }
         // Row4
