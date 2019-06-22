@@ -37,6 +37,9 @@ ApplicationWindow {
             onCurrentTextChanged: {
                 VirtualKeyboardSettings.locale = langCombo.currentText
             }
+            Component.onCompleted: {
+                VirtualKeyboardSettings.locale = langCombo.currentText
+            }
         }
         // Dummy test content
         ListView{
