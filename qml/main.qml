@@ -58,16 +58,25 @@ ApplicationWindow {
                     text: "Button"
                 }
                 CONTROLS.TextFieldEx {
-                    id: textInputAlNum
                     text: "AlphaNum" + modelData
+                    validator: RegExpValidator {
+                        regExp: /AlphaNum[0-9].*/
+                    }
                 }
                 CONTROLS.TextFieldEx {
-                    id: textInputNum
-                    text: "Num" + modelData
-                    Keys.onEscapePressed: {
-                      focus = false
+                    text: modelData
+                    validator: IntValidator {
+                        bottom: -100
+                        top: 100
                     }
-                    inputMethodHints: Qt.ImhDigitsOnly
+                }
+                CONTROLS.TextFieldEx {
+                    text: modelData+"."+modelData
+                    validator: CONTROLS.DoubleValidatorEx {
+                        bottom: -100.0
+                        top: 100.0
+                        decimals: 3
+                    }
                 }
             }
         }

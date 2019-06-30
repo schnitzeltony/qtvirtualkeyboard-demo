@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>qml/main.qml</file>
+        <file>qml/controls/DoubleValidatorEx.qml</file>
         <file>qml/controls/TextFieldEx.qml</file>
         <file>vkeyboard/DarkKey.qml</file>
         <file>vkeyboard/layouts/de_DE/digits.fallback</file>
