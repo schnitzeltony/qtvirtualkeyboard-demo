@@ -4,6 +4,7 @@ import QtQuick.VirtualKeyboard 2.4
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
+import QtQuick.Dialogs 1.3
 import QtQuick.Controls.Material 2.12
 import QtQuick.VirtualKeyboard.Settings 2.2
 import "qrc:/qml/controls" as CONTROLS
@@ -62,12 +63,20 @@ ApplicationWindow {
                     validator: RegExpValidator {
                         regExp: /AlphaNum[0-9].*/
                     }
+                    function postApplyInput() {
+                        messageDialog.text = text
+                        messageDialog.visible = true
+                    }
                 }
                 CONTROLS.TextFieldEx {
                     text: modelData
                     validator: IntValidator {
                         bottom: -100
                         top: 100
+                    }
+                    function postApplyInput() {
+                        messageDialog.text = text
+                        messageDialog.visible = true
                     }
                 }
                 CONTROLS.TextFieldEx {
@@ -76,6 +85,10 @@ ApplicationWindow {
                         bottom: -100.0
                         top: 100.0
                         decimals: 3
+                    }
+                    function postApplyInput() {
+                        messageDialog.text = text
+                        messageDialog.visible = true
                     }
                 }
             }
@@ -129,5 +142,14 @@ ApplicationWindow {
                  keyboardAnimation.start()
              }
          }
+    }
+    MessageDialog {
+        id: messageDialog
+        title: "Data changed"
+        icon: StandardIcon.Information
+        text: "It's so cool that you are using Qt Quick."
+        onAccepted: {
+            visible = false
+        }
     }
 }
