@@ -16,6 +16,9 @@ Item {
         if(isNumeric) {
             tField.inputMethodHints = Qt.ImhDigitsOnly
         }
+        else {
+            tField.inputMethodHints = Qt.ImhNoAutoUppercase
+        }
     }
     property string text: "" // locale C
     onTextChanged: {
