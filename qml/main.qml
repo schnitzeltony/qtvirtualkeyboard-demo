@@ -12,7 +12,7 @@ import "qrc:/qml/controls" as CONTROLS
 ApplicationWindow {
     id: window
     visible: true
-    width: 640
+    width: 800
     height: 480
     title: qsTr("Virtual Keyboard Example")
 
@@ -90,6 +90,11 @@ ApplicationWindow {
                         messageDialog.text = text
                         messageDialog.visible = true
                     }
+                }
+                CONTROLS.SpinBoxEx {
+                    from: 0
+                    to: 10
+                    editable: true
                 }
             }
         }
