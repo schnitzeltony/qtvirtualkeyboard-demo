@@ -53,7 +53,24 @@ ApplicationWindow {
             model: 11
             interactive: false
             delegate: RowLayout {
+                id: rowLayout
                 height: 40
+                readonly property bool delayed: parseInt(modelData, 10) % 2 === 0
+                function doApplyAndShow(text) {
+                    messageDialog.text = text
+                    messageDialog.visible = true
+                }
+                function doApplyInputOnControl(newText, timer) {
+                    if(rowLayout.delayed) {
+                        timer.text = newText
+                        timer.start()
+                        return false
+                    }
+                    else {
+                        rowLayout.doApplyAndShow(newText)
+                        return true;
+                    }
+                }
                 Button {
                     id: button
                     text: "Button"
@@ -63,10 +80,15 @@ ApplicationWindow {
                     validator: RegExpValidator {
                         regExp: /AlphaNum[0-9].*/
                     }
+                    CONTROLS.DelayTest {
+                        id: alNumTextTimer
+                        onTriggered: {
+                            doApplyAndShow(text)
+                            parent.text = text
+                        }
+                    }
                     function doApplyInput(newText) {
-                        messageDialog.text = text
-                        messageDialog.visible = true
-                        return true;
+                        return doApplyInputOnControl(newText, alNumTextTimer)
                     }
                 }
                 CONTROLS.TextFieldEx {
@@ -76,8 +98,7 @@ ApplicationWindow {
                         top: 100
                     }
                     function doApplyInput(newText) {
-                        messageDialog.text = text
-                        messageDialog.visible = true
+                        doApplyAndShow(text)
                         return true;
                     }
                 }
@@ -89,8 +110,7 @@ ApplicationWindow {
                         decimals: 3
                     }
                     function doApplyInput(newText) {
-                        messageDialog.text = text
-                        messageDialog.visible = true
+                        doApplyAndShow(text)
                         return true;
                     }
                 }
