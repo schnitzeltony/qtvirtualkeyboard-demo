@@ -43,6 +43,22 @@ ApplicationWindow {
                 VirtualKeyboardSettings.locale = langCombo.currentText
             }
         }
+        Label {
+            id: labelEntered
+            anchors.left: langCombo.right
+            anchors.leftMargin: 5
+            anchors.right: parent.right
+            height: langCombo.height
+            verticalAlignment: "AlignVCenter"
+            onTextChanged: animation.start()
+            ColorAnimation on color {
+                id: animation
+                from: "red"
+                to: "white"
+                duration: 300
+            }
+        }
+
         // Dummy test content
         ListView{
             id: listViewControls
@@ -57,8 +73,7 @@ ApplicationWindow {
                 height: 40
                 readonly property bool delayed: parseInt(modelData, 10) % 2 === 0
                 function doApplyAndShow(text) {
-                    messageDialog.text = text
-                    messageDialog.visible = true
+                    labelEntered.text = "Entered: " + text
                 }
                 function doApplyInputOnControl(newText, timer) {
                     if(rowLayout.delayed) {
@@ -97,9 +112,15 @@ ApplicationWindow {
                         bottom: -100
                         top: 100
                     }
+                    CONTROLS.DelayTest {
+                        id: intTextTimer
+                        onTriggered: {
+                            doApplyAndShow(text)
+                            parent.text = text
+                        }
+                    }
                     function doApplyInput(newText) {
-                        doApplyAndShow(text)
-                        return true;
+                        return doApplyInputOnControl(newText, intTextTimer)
                     }
                 }
                 CONTROLS.TextFieldEx {
@@ -109,9 +130,15 @@ ApplicationWindow {
                         top: 100.0
                         decimals: 3
                     }
+                    CONTROLS.DelayTest {
+                        id: doubleTextTimer
+                        onTriggered: {
+                            doApplyAndShow(text)
+                            parent.text = text
+                        }
+                    }
                     function doApplyInput(newText) {
-                        doApplyAndShow(text)
-                        return true;
+                        return doApplyInputOnControl(newText, doubleTextTimer)
                     }
                 }
                 CONTROLS.SpinBoxEx {
@@ -170,14 +197,5 @@ ApplicationWindow {
                  keyboardAnimation.start()
              }
          }
-    }
-    MessageDialog {
-        id: messageDialog
-        title: "Data changed"
-        icon: StandardIcon.Information
-        text: "It's so cool that you are using Qt Quick."
-        onAccepted: {
-            visible = false
-        }
     }
 }
