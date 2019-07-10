@@ -34,8 +34,8 @@ Item {
     property alias spinBox: sBox
     property bool changeOnFocusLost: true
 
-    // overridable
-    function postApplyInput() {}
+    // overridable (return true: apply immediate)
+    function doApplyInput(newText) {return true}
 
     // helpers
     property var textField: sBox.children[2]
@@ -62,8 +62,10 @@ Item {
             if(hasAlteredValue())
             {
                 inApply = true
-                localRoot.displayText = getInputCLocale()
-                postApplyInput()
+                var newText = getInputCLocale()
+                if(doApplyInput(newText)) {
+                    localRoot.text = newText
+                }
                 inApply = false
             }
             // we changed displayText but did not change value

@@ -63,9 +63,10 @@ ApplicationWindow {
                     validator: RegExpValidator {
                         regExp: /AlphaNum[0-9].*/
                     }
-                    function postApplyInput() {
+                    function doApplyInput(newText) {
                         messageDialog.text = text
                         messageDialog.visible = true
+                        return true;
                     }
                 }
                 CONTROLS.TextFieldEx {
@@ -74,9 +75,10 @@ ApplicationWindow {
                         bottom: -100
                         top: 100
                     }
-                    function postApplyInput() {
+                    function doApplyInput(newText) {
                         messageDialog.text = text
                         messageDialog.visible = true
+                        return true;
                     }
                 }
                 CONTROLS.TextFieldEx {
@@ -86,9 +88,10 @@ ApplicationWindow {
                         top: 100.0
                         decimals: 3
                     }
-                    function postApplyInput() {
+                    function doApplyInput(newText) {
                         messageDialog.text = text
                         messageDialog.visible = true
+                        return true;
                     }
                 }
                 CONTROLS.SpinBoxEx {
