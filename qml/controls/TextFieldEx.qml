@@ -39,6 +39,7 @@ Item {
     readonly property bool isNumeric: validator !== undefined && 'bottom' in validator && 'top' in validator
     readonly property bool isDouble: isNumeric && 'decimals' in validator
     property bool inApply: false
+    property bool inFocusKill: false
     readonly property string localeName: VirtualKeyboardSettings.locale
     onLocaleNameChanged: {
         localTextToInput()
@@ -128,11 +129,15 @@ Item {
         inputMethodHints: Qt.ImhNoAutoUppercase
         onAccepted: {
             applyInput()
+            inFocusKill = true
             focus = false
+            inFocusKill = false
         }
         Keys.onEscapePressed: {
             discardInput()
+            inFocusKill = true
             focus = false
+            inFocusKill = false
         }
         /* Avoid QML magic: when the cursor is at start/end position,
         left/right keys are used to change tab. We don't want that */
@@ -148,7 +153,7 @@ Item {
         }
 
         onFocusChanged: {
-            if(changeOnFocusLost && !focus) {
+            if(changeOnFocusLost && !inFocusKill && !focus) {
                 if(localRoot.hasAlteredValue()) {
                     if(localRoot.hasValidInput()) {
                         applyInput()
