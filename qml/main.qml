@@ -12,7 +12,7 @@ import "qrc:/qml/controls" as CONTROLS
 ApplicationWindow {
     id: window
     visible: true
-    width: 800
+    width: 960
     height: 480
     title: qsTr("Virtual Keyboard Example")
 
@@ -147,9 +147,10 @@ ApplicationWindow {
                 // Integer spin
                 CONTROLS.SpinBoxEx {
                     text: modelData
-                    from: 0
-                    to: 10
-                    readOnly: false
+                    validator: IntValidator {
+                        bottom: -100
+                        top: 100
+                    }
                     CONTROLS.DelayTest {
                         id: intSpinTimer
                         onTriggered: {
@@ -159,6 +160,26 @@ ApplicationWindow {
                     }
                     function doApplyInput(newText) {
                         return doApplyInputOnControl(newText, intSpinTimer)
+                    }
+                }
+                // Double spin
+                CONTROLS.SpinBoxEx {
+                    text: modelData+"."+modelData
+                    stepSize: 100 // 3 digits(0.001) -> 0.1
+                    validator: CONTROLS.DoubleValidatorEx {
+                        bottom: -100.0
+                        top: 100.0
+                        decimals: 3
+                    }
+                    CONTROLS.DelayTest {
+                        id: doubleSpinTimer
+                        onTriggered: {
+                            doApplyAndShow(text)
+                            parent.text = text
+                        }
+                    }
+                    function doApplyInput(newText) {
+                        return doApplyInputOnControl(newText, doubleSpinTimer)
                     }
                 }
             }

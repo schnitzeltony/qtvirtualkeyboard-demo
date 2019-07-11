@@ -10,9 +10,8 @@ Item {
     height: parent.height
 
     // public interface
+    property alias stepSize: sBox.stepSize
     property alias spinBox: sBox
-    property alias from: sBox.from
-    property alias to: sBox.to
     property bool readOnly: false
     onReadOnlyChanged: {
         sBox.editable = !readOnly
@@ -22,6 +21,14 @@ Item {
     onValidatorChanged: {
         sBox.validator = validator
         if(isNumeric) {
+            if(isDouble) {
+                sBox.from = validator.bottom*Math.pow(10, validator.decimals)
+                sBox.to = validator.top*Math.pow(10, validator.decimals)
+            }
+            else {
+                sBox.from = validator.bottom
+                sBox.to = validator.top
+            }
             sBox.inputMethodHints = Qt.ImhDigitsOnly
         }
         else {
@@ -30,7 +37,8 @@ Item {
     }
     property string text: "" // locale C
     onTextChanged: {
-        tField.text = tHelper.strToLocal(text)
+        sBox.value = sBox.valueFromText(text, Qt.locale(VirtualKeyboardSettings.locale))
+        inApply = false
     }
     readonly property bool acceptableInput: hasValidInput()
     property bool changeOnFocusLost: true
@@ -52,28 +60,35 @@ Item {
         return tHelper.hasValidInput(isNumeric, isDouble, validator !== undefined, bottom, top, tField.acceptableInput, tField.text)
     }
 
-    property var tField: sBox.children[2]
+    property var tField: sBox.contentItem
 
     // bit of a hack to check for IntValidator / DoubleValidator to detect a numeric field
-    readonly property bool isNumeric: validator !== undefined && 'bottom' in tField.validator && 'top' in tField.validator
-    readonly property bool isDouble: isNumeric && 'decimals' in tField.validator
+    readonly property bool isNumeric: validator !== undefined && 'bottom' in sBox.validator && 'top' in sBox.validator
+    readonly property bool isDouble: isNumeric && 'decimals' in sBox.validator
     property bool inApply: false
+    property bool inFocusKill: false
     readonly property string localeName: VirtualKeyboardSettings.locale
     onLocaleNameChanged: {
         tField.text = tHelper.strToLocal(text)
     }
     function applyInput() {
-        if(tHelper.strToCLocale(tField.text) !== text && hasValidInput()) {
-            if(hasAlteredValue())
+        if(tHelper.strToCLocale(tField.text) !== text) {
+            if(hasValidInput())
             {
-                inApply = true
-                var newText = tHelper.strToCLocale(tField.text)
-                if(doApplyInput(newText)) {
-                    text = newText
+                if(hasAlteredValue())
+                {
+                    inApply = true
+                    var newText = tHelper.strToCLocale(tField.text)
+                    if(doApplyInput(newText)) {
+                        text = newText
+                        inApply = false
+                    }
                 }
-                inApply = false
+                // we changed text but did not change value
+                else {
+                    discardInput()
+                }
             }
-            // we changed text but did not change value
             else {
                 discardInput()
             }
@@ -91,20 +106,56 @@ Item {
         height: parent.height
         bottomPadding: 8
         editable: true
-
         inputMethodHints: Qt.ImhDigitsOnly
 
+        // overrides
+        textFromValue: function(value, locale) {
+            if (isNumeric) {
+                if(isDouble) {
+                    var val = value / Math.pow(10, validator.decimals)
+                    return tHelper.strToLocal(val.toString())
+                }
+                else {
+                    return tHelper.strToLocal(value.toString())
+                }
+            }
+            else {
+                // TODO
+                return ""
+            }
+        }
+        valueFromText: function(text, locale) {
+            if (isNumeric) {
+                if(isDouble) {
+                    return Number.fromLocaleString(Qt.locale(VirtualKeyboardSettings.locale), text)*Math.pow(10, validator.decimals)
+                }
+                else {
+                    return parseInt(text, 10)
+                }
+            }
+            else {
+                // TODO
+                return 0
+            }
+
+        }
+
+        // Events
         Keys.onReturnPressed: {
+            // Hmm try to get same behaviour as TextEditEx
             if(hasValidInput())
+            {
                 applyInput()
-            else
-                discardInput()
-            event.accepted = false;
-            focus = false
+                inFocusKill = true
+                focus = false
+                inFocusKill = false
+            }
         }
         Keys.onEscapePressed: {
             discardInput()
+            inFocusKill = true
             focus = false
+            inFocusKill = false
         }
         /* Avoid QML magic: when the cursor is at start/end position,
         left/right keys are used to change tab. We don't want that */
@@ -119,14 +170,16 @@ Item {
             }
         }
         onValueModified: {
-            // TODO Text spins
-            tField.text = tHelper.strToLocal(value)
-            if(!sBox.focus)
-                applyInput()
+            if(!inApply) {
+                // TODO Text spins
+                tField.text = textFromValue(value, Qt.locale(VirtualKeyboardSettings.locale))
+                if(!sBox.focus)
+                    applyInput()
+            }
         }
 
         onFocusChanged: {
-            if(changeOnFocusLost && !focus) {
+            if(changeOnFocusLost && !inFocusKill && !focus) {
                 if(hasAlteredValue()) {
                     if(hasValidInput()) {
                         applyInput()
@@ -141,6 +194,8 @@ Item {
                 selectAll()
             }*/
         }
+
+        // Background rects
         Rectangle {
             anchors.fill: tField
             anchors.bottomMargin: -4
