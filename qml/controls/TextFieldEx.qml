@@ -22,8 +22,7 @@ Item {
     }
     property string text: "" // locale C
     onTextChanged: {
-        if(!inApply)
-            localTextToInput()
+        tField.text = strToLocal(text)
     }
     property alias textField: tField
     property alias placeholderText: tField.placeholderText;
@@ -42,13 +41,33 @@ Item {
     property bool inFocusKill: false
     readonly property string localeName: VirtualKeyboardSettings.locale
     onLocaleNameChanged: {
-        localTextToInput()
+        tField.text = strToLocal(text)
     }
-    function getInputCLocale() {
-        return isDouble ? tField.text.replace(",", ".") : tField.text
+    function strToCLocale(str) {
+        if(isNumeric) {
+            if(!isDouble) {
+                return parseInt(str, 10)
+            }
+            else {
+                return str.replace(",", ".")
+            }
+        }
+        else {
+            return str
+        }
     }
-    function localTextToInput() {
-        tField.text = isDouble ? text.replace(Qt.locale(VirtualKeyboardSettings.locale).decimalPoint === "," ? "." : ",", Qt.locale(VirtualKeyboardSettings.locale).decimalPoint) : text
+    function strToLocal(str) {
+        if(isNumeric) {
+            if(!isDouble) {
+                return parseInt(str)
+            }
+            else {
+                return str.replace(Qt.locale(VirtualKeyboardSettings.locale).decimalPoint === "," ? "." : ",", Qt.locale(VirtualKeyboardSettings.locale).decimalPoint)
+            }
+        }
+        else {
+            return str
+        }
     }
     function hasAlteredValue() {
         var altered = false
@@ -58,7 +77,7 @@ Item {
                 altered = true
             }
             else if(isDouble) {
-                altered = (Math.abs(parseFloat(getInputCLocale()) - parseFloat(text))) >= Math.pow(10, -localRoot.validator.decimals)
+                altered = (Math.abs(parseFloat(strToCLocale(tField.text)) - parseFloat(text))) >= Math.pow(10, -localRoot.validator.decimals)
             }
             else {
                 altered = parseInt(tField.text, 10) !== parseInt(text, 10)
@@ -70,11 +89,11 @@ Item {
         return altered
     }
     function applyInput() {
-        if(getInputCLocale() !== localRoot.text && localRoot.hasValidInput()) {
+        if(strToCLocale(tField.text) !== localRoot.text && localRoot.hasValidInput()) {
             if(hasAlteredValue())
             {
                 inApply = true
-                var newText = getInputCLocale()
+                var newText = strToCLocale(tField.text)
                 if(doApplyInput(newText)) {
                     localRoot.text = newText
                 }
@@ -82,15 +101,13 @@ Item {
             }
             // we changed text but did not change value
             else {
-                // discard changes
-                localTextToInput()
+                discardInput()
             }
         }
     }
     function discardInput() {
         if(tField.text !== localRoot.text) {
-            // default: discard
-            localTextToInput()
+            tField.text = strToLocal(text)
         }
     }
     function hasValidInput() {
@@ -104,7 +121,7 @@ Item {
                         valid = false
                     }
                     else {
-                        valid = localRoot.validator.top>=parseFloat(getInputCLocale()) && localRoot.validator.bottom<=parseFloat(getInputCLocale())
+                        valid = localRoot.validator.top>=parseFloat(strToCLocale(tField.text)) && localRoot.validator.bottom<=parseFloat(strToCLocale(tField.text))
                     }
                 }
                 else {
@@ -161,6 +178,9 @@ Item {
                     else {
                         discardInput()
                     }
+                }
+                else {
+                    discardInput()
                 }
             }
             // Hmm - maybe we should add an option for this...

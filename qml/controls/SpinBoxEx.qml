@@ -47,7 +47,7 @@ Item {
     onLocaleNameChanged: {
         sBox.textFromValue(value, VirtualKeyboardSettings.locale)
     }
-    /*function getInputCLocale() {
+    /*function strToCLocale() {
         return isDouble ? sBox.displayText.replace(",", ".") : sBox.displayText
     }*/
     function hasAlteredValue() {
@@ -58,11 +58,11 @@ Item {
         return altered
     }
     function applyInput() {
-        if(getInputCLocale() !== localRoot.displayText && localRoot.hasValidInput()) {
+        if(strToCLocale() !== localRoot.displayText && localRoot.hasValidInput()) {
             if(hasAlteredValue())
             {
                 inApply = true
-                var newText = getInputCLocale()
+                var newText = strToCLocale()
                 if(doApplyInput(newText)) {
                     localRoot.text = newText
                 }
@@ -91,7 +91,7 @@ Item {
                         valid = false
                     }
                     else {
-                        valid = localRoot.validator.top>=parseFloat(getInputCLocale()) && localRoot.validator.bottom<=parseFloat(getInputCLocale())
+                        valid = localRoot.validator.top>=parseFloat(strToCLocale()) && localRoot.validator.bottom<=parseFloat(strToCLocale())
                     }
                 }
                 else {
