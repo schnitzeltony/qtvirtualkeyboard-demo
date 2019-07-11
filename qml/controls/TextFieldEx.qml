@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
 import QtQuick.VirtualKeyboard.Settings 2.2
+import "qrc:/qml/controls" as CONTROLS
 
 Item {
     id: localRoot
@@ -22,7 +23,7 @@ Item {
     }
     property string text: "" // locale C
     onTextChanged: {
-        tField.text = strToLocal(text)
+        tField.text = tHelper.strToLocal(text)
     }
     property alias textField: tField
     property alias placeholderText: tField.placeholderText;
@@ -34,6 +35,10 @@ Item {
     function doApplyInput(newText) {return true}
 
     // helpers
+    CONTROLS.TextHelper {
+        id: tHelper
+    }
+
     // bit of a hack to check for IntValidator / DoubleValidator to detect a numeric field
     readonly property bool isNumeric: validator !== undefined && 'bottom' in validator && 'top' in validator
     readonly property bool isDouble: isNumeric && 'decimals' in validator
@@ -41,59 +46,14 @@ Item {
     property bool inFocusKill: false
     readonly property string localeName: VirtualKeyboardSettings.locale
     onLocaleNameChanged: {
-        tField.text = strToLocal(text)
-    }
-    function strToCLocale(str) {
-        if(isNumeric) {
-            if(!isDouble) {
-                return parseInt(str, 10)
-            }
-            else {
-                return str.replace(",", ".")
-            }
-        }
-        else {
-            return str
-        }
-    }
-    function strToLocal(str) {
-        if(isNumeric) {
-            if(!isDouble) {
-                return parseInt(str)
-            }
-            else {
-                return str.replace(Qt.locale(VirtualKeyboardSettings.locale).decimalPoint === "," ? "." : ",", Qt.locale(VirtualKeyboardSettings.locale).decimalPoint)
-            }
-        }
-        else {
-            return str
-        }
-    }
-    function hasAlteredValue() {
-        var altered = false
-        // Numerical?
-        if(isNumeric) {
-            if(tField.text !== localRoot.text && (tField.text === "" || localRoot.text === "")) {
-                altered = true
-            }
-            else if(isDouble) {
-                altered = (Math.abs(parseFloat(strToCLocale(tField.text)) - parseFloat(text))) >= Math.pow(10, -localRoot.validator.decimals)
-            }
-            else {
-                altered = parseInt(tField.text, 10) !== parseInt(text, 10)
-            }
-        }
-        else {
-            altered = tField.text !== localRoot.text
-        }
-        return altered
+        tField.text = tHelper.strToLocal(text)
     }
     function applyInput() {
-        if(strToCLocale(tField.text) !== localRoot.text && localRoot.hasValidInput()) {
-            if(hasAlteredValue())
+        if(tHelper.strToCLocale(tField.text) !== localRoot.text && localRoot.hasValidInput()) {
+            if(tHelper.hasAlteredValue(isNumeric, isDouble, tField.text, localRoot.text))
             {
                 inApply = true
-                var newText = strToCLocale(tField.text)
+                var newText = tHelper.strToCLocale(tField.text)
                 if(doApplyInput(newText)) {
                     localRoot.text = newText
                 }
@@ -107,7 +67,7 @@ Item {
     }
     function discardInput() {
         if(tField.text !== localRoot.text) {
-            tField.text = strToLocal(text)
+            tField.text = tHelper.strToLocal(text)
         }
     }
     function hasValidInput() {
@@ -121,7 +81,7 @@ Item {
                         valid = false
                     }
                     else {
-                        valid = localRoot.validator.top>=parseFloat(strToCLocale(tField.text)) && localRoot.validator.bottom<=parseFloat(strToCLocale(tField.text))
+                        valid = localRoot.validator.top>=parseFloat(tHelper.strToCLocale(tField.text)) && localRoot.validator.bottom<=parseFloat(tHelper.strToCLocale(tField.text))
                     }
                 }
                 else {
@@ -171,7 +131,7 @@ Item {
 
         onFocusChanged: {
             if(changeOnFocusLost && !inFocusKill && !focus) {
-                if(localRoot.hasAlteredValue()) {
+                if(tHelper.hasAlteredValue(isNumeric, isDouble, tField.text, localRoot.text)) {
                     if(localRoot.hasValidInput()) {
                         applyInput()
                     }
@@ -199,7 +159,7 @@ Item {
             anchors.fill: parent
             color: "green"
             opacity: 0.2
-            visible: localRoot.hasValidInput() && tField.enabled && localRoot.hasAlteredValue()
+            visible: localRoot.hasValidInput() && tField.enabled && tHelper.hasAlteredValue(isNumeric, isDouble, tField.text, localRoot.text)
         }
     }
 }
