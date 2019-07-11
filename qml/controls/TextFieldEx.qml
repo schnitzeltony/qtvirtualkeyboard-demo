@@ -23,6 +23,7 @@ Item {
     }
     property string text: "" // locale C
     onTextChanged: {
+        inApply = false
         tField.text = tHelper.strToLocal(text)
     }
     property alias textField: tField
@@ -58,17 +59,23 @@ Item {
         tField.text = tHelper.strToLocal(text)
     }
     function applyInput() {
-        if(tHelper.strToCLocale(tField.text) !== text && hasValidInput()) {
-            if(hasAlteredValue())
+        if(tHelper.strToCLocale(tField.text) !== text) {
+            if(hasValidInput())
             {
-                inApply = true
-                var newText = tHelper.strToCLocale(tField.text)
-                if(doApplyInput(newText)) {
-                    text = newText
+                if(hasAlteredValue())
+                {
+                    inApply = true
+                    var newText = tHelper.strToCLocale(tField.text)
+                    if(doApplyInput(newText)) {
+                        text = newText
+                        inApply = false
+                    }
                 }
-                inApply = false
+                // we changed text but did not change value
+                else {
+                    discardInput()
+                }
             }
-            // we changed text but did not change value
             else {
                 discardInput()
             }
