@@ -37,6 +37,7 @@ Item {
     }
     property string text: "" // locale C
     onTextChanged: {
+        tField.text = tHelper.strToLocal(text)
         sBox.value = sBox.valueFromText(text, Qt.locale(VirtualKeyboardSettings.locale))
         inApply = false
     }
@@ -71,27 +72,32 @@ Item {
     onLocaleNameChanged: {
         tField.text = tHelper.strToLocal(text)
     }
-    function applyInput() {
-        if(tHelper.strToCLocale(tField.text) !== text) {
-            if(hasValidInput())
-            {
-                if(hasAlteredValue())
-                {
-                    inApply = true
-                    var newText = tHelper.strToCLocale(tField.text)
-                    if(doApplyInput(newText)) {
-                        text = newText
-                        inApply = false
-                    }
-                }
-                // we changed text but did not change value
-                else {
-                    discardInput()
-                }
+    function applyInput(byValueChange) {
+        var needsApply = byValueChange
+        var needsDiscard = false
+        // RETURN or focus loose -> check text
+        if(!needsApply) {
+            if(tHelper.strToCLocale(tField.text) !== text) {
+                needsApply = hasAlteredValue() && hasValidInput()
+                needsDiscard = !needsApply
+            }
+        }
+        if(needsApply) {
+            var newText
+            if(byValueChange) {
+                newText = sBox.textFromValue(sBox.value, Qt.locale(VirtualKeyboardSettings.locale))
             }
             else {
-                discardInput()
+                newText = tHelper.strToCLocale(tField.text)
             }
+            inApply = true
+            if(doApplyInput(newText)) {
+                text = newText
+                inApply = false
+            }
+        }
+        if(needsDiscard) {
+            discardInput()
         }
     }
     function discardInput() {
@@ -145,7 +151,8 @@ Item {
             // Hmm try to get same behaviour as TextEditEx
             if(hasValidInput())
             {
-                applyInput()
+                event.accepted = false;
+                applyInput(false)
                 inFocusKill = true
                 focus = false
                 inFocusKill = false
@@ -172,9 +179,9 @@ Item {
         onValueModified: {
             if(!inApply) {
                 // TODO Text spins
-                tField.text = textFromValue(value, Qt.locale(VirtualKeyboardSettings.locale))
+                //tField.text = textFromValue(value, Qt.locale(VirtualKeyboardSettings.locale))
                 if(!sBox.focus)
-                    applyInput()
+                    applyInput(true)
             }
         }
 
@@ -182,7 +189,7 @@ Item {
             if(changeOnFocusLost && !inFocusKill && !focus) {
                 if(hasAlteredValue()) {
                     if(hasValidInput()) {
-                        applyInput()
+                        applyInput(false)
                     }
                     else {
                         discardInput()
@@ -208,7 +215,7 @@ Item {
             anchors.bottomMargin: -4
             color: "green"
             opacity: 0.2
-            visible: hasValidInput() && !readOnly && hasAlteredValue()
+            visible: inApply || (hasValidInput() && !readOnly && hasAlteredValue())
         }
 
     }
