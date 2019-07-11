@@ -2,108 +2,87 @@ import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
 import QtQuick.VirtualKeyboard.Settings 2.2
+import "qrc:/qml/helpers" as HELPERS
 
 Item {
-    id: localRoot
-
     Layout.alignment: Qt.AlignVCenter
     Layout.minimumWidth: sBox.width
     height: parent.height
 
+    // public interface
+    property alias spinBox: sBox
     property alias from: sBox.from
     property alias to: sBox.to
-    property alias editable: sBox.editable
-    property alias textFromValue: sBox.textFromValue
-    property alias valueFromText: sBox.valueFromText
+    property bool readOnly: false
+    onReadOnlyChanged: {
+        sBox.editable = !readOnly
+    }
 
-    // public interface
     property var validator
     onValidatorChanged: {
         sBox.validator = validator
         if(isNumeric) {
-            tField.inputMethodHints = Qt.ImhDigitsOnly
+            sBox.inputMethodHints = Qt.ImhDigitsOnly
         }
         else {
-            tField.inputMethodHints = Qt.ImhNoAutoUppercase
+            sBox.inputMethodHints = Qt.ImhNoAutoUppercase
         }
     }
-    property int value
-    onValueChanged: {
-        // TODO
+    property string text: "" // locale C
+    onTextChanged: {
+        tField.text = tHelper.strToLocal(text)
     }
-    property alias spinBox: sBox
+    readonly property bool acceptableInput: hasValidInput()
     property bool changeOnFocusLost: true
 
     // overridable (return true: apply immediate)
     function doApplyInput(newText) {return true}
 
     // helpers
-    property var textField: sBox.children[2]
+    HELPERS.TextHelper {
+        id: tHelper
+    }
+    function hasAlteredValue() {
+        var decimals = isDouble ? validator.decimals : 0
+        return tHelper.hasAlteredValue(isNumeric, isDouble, decimals, tField.text, text)
+    }
+    function hasValidInput() {
+        var bottom = isNumeric ? validator.bottom : 0
+        var top = isNumeric ? validator.top : 0
+        return tHelper.hasValidInput(isNumeric, isDouble, validator !== undefined, bottom, top, tField.acceptableInput, tField.text)
+    }
+
+    property var tField: sBox.children[2]
+
     // bit of a hack to check for IntValidator / DoubleValidator to detect a numeric field
-    readonly property bool isNumeric: textField.validator !== undefined && 'bottom' in textField.validator && 'top' in textField.validator
-    readonly property bool isDouble: isNumeric && 'decimals' in textField.validator
+    readonly property bool isNumeric: validator !== undefined && 'bottom' in tField.validator && 'top' in tField.validator
+    readonly property bool isDouble: isNumeric && 'decimals' in tField.validator
     property bool inApply: false
     readonly property string localeName: VirtualKeyboardSettings.locale
     onLocaleNameChanged: {
-        sBox.textFromValue(value, VirtualKeyboardSettings.locale)
-    }
-    /*function strToCLocale() {
-        return isDouble ? sBox.displayText.replace(",", ".") : sBox.displayText
-    }*/
-    function hasAlteredValue() {
-        var altered = false
-        if(sBox.displayText !== localRoot.textField.text) {
-            altered = true
-        }
-        return altered
+        tField.text = tHelper.strToLocal(text)
     }
     function applyInput() {
-        if(strToCLocale() !== localRoot.displayText && localRoot.hasValidInput()) {
+        if(tHelper.strToCLocale(tField.text) !== text && hasValidInput()) {
             if(hasAlteredValue())
             {
                 inApply = true
-                var newText = strToCLocale()
+                var newText = tHelper.strToCLocale(tField.text)
                 if(doApplyInput(newText)) {
-                    localRoot.text = newText
+                    text = newText
                 }
                 inApply = false
             }
-            // we changed displayText but did not change value
+            // we changed text but did not change value
             else {
-                // discard changes
                 discardInput()
             }
         }
     }
     function discardInput() {
-        if(hasAlteredValue()) {
-            localRoot.textField.text = sBox.displayText
+        if(tField.text !== text) {
+            tField.text = tHelper.strToLocal(text)
         }
-    }
-    function hasValidInput() {
-        var valid = !sBox.editable || textField.acceptableInput
-        if (valid && localRoot.validator) {
-            // IntValidator / DoubleValidator
-            if(localRoot.isNumeric) {
-                if(localRoot.isDouble) {
-                    // Sometimes wrong decimal separator is accepted by DoubleValidator so check for it
-                    if(Qt.locale(VirtualKeyboardSettings.locale).decimalPoint === "," ? sBox.displayText.includes(".") : sBox.displayText.includes(",")) {
-                        valid = false
-                    }
-                    else {
-                        valid = localRoot.validator.top>=parseFloat(strToCLocale()) && localRoot.validator.bottom<=parseFloat(strToCLocale())
-                    }
-                }
-                else {
-                    valid = localRoot.validator.top>=parseInt(sBox.displayText, 10) && localRoot.validator.bottom<=parseInt(sBox.displayText, 10)
-                }
-            }
-            // RegExpValidator
-            else {
-            // TODO?
-            }
-        }
-        return valid
     }
 
     // controls
@@ -111,6 +90,7 @@ Item {
         id: sBox
         height: parent.height
         bottomPadding: 8
+        editable: true
 
         inputMethodHints: Qt.ImhDigitsOnly
 
@@ -123,7 +103,7 @@ Item {
             focus = false
         }
         Keys.onEscapePressed: {
-            localRoot.discardInput()
+            discardInput()
             focus = false
         }
         /* Avoid QML magic: when the cursor is at start/end position,
@@ -139,13 +119,16 @@ Item {
             }
         }
         onValueModified: {
-            localRoot.value = value
+            // TODO Text spins
+            tField.text = tHelper.strToLocal(value)
+            if(!sBox.focus)
+                applyInput()
         }
 
         onFocusChanged: {
             if(changeOnFocusLost && !focus) {
-                if(localRoot.hasAlteredValue()) {
-                    if(localRoot.hasValidInput()) {
+                if(hasAlteredValue()) {
+                    if(hasValidInput()) {
                         applyInput()
                     }
                     else {
@@ -159,16 +142,18 @@ Item {
             }*/
         }
         Rectangle {
-            anchors.fill: parent
+            anchors.fill: tField
+            anchors.bottomMargin: -4
             color: "red"
             opacity: 0.2
-            visible: localRoot.hasValidInput() === false && sBox.editable
+            visible: hasValidInput() === false && !readOnly
         }
         Rectangle {
-            anchors.fill: parent
+            anchors.fill: tField
+            anchors.bottomMargin: -4
             color: "green"
             opacity: 0.2
-            visible: localRoot.hasValidInput() && sBox.editable && localRoot.hasAlteredValue()
+            visible: hasValidInput() && !readOnly && hasAlteredValue()
         }
 
     }

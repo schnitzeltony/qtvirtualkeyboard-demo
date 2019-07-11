@@ -90,6 +90,7 @@ ApplicationWindow {
                     id: button
                     text: "Button"
                 }
+                // Alphanum text
                 CONTROLS.TextFieldEx {
                     text: "AlphaNum" + modelData
                     validator: RegExpValidator {
@@ -106,6 +107,7 @@ ApplicationWindow {
                         return doApplyInputOnControl(newText, alNumTextTimer)
                     }
                 }
+                // Integer text
                 CONTROLS.TextFieldEx {
                     text: modelData
                     validator: IntValidator {
@@ -123,6 +125,7 @@ ApplicationWindow {
                         return doApplyInputOnControl(newText, intTextTimer)
                     }
                 }
+                // Double text
                 CONTROLS.TextFieldEx {
                     text: modelData+"."+modelData
                     validator: CONTROLS.DoubleValidatorEx {
@@ -141,10 +144,22 @@ ApplicationWindow {
                         return doApplyInputOnControl(newText, doubleTextTimer)
                     }
                 }
+                // Integer spin
                 CONTROLS.SpinBoxEx {
+                    text: modelData
                     from: 0
                     to: 10
-                    editable: true
+                    readOnly: false
+                    CONTROLS.DelayTest {
+                        id: intSpinTimer
+                        onTriggered: {
+                            doApplyAndShow(text)
+                            parent.text = text
+                        }
+                    }
+                    function doApplyInput(newText) {
+                        return doApplyInputOnControl(newText, intSpinTimer)
+                    }
                 }
             }
         }
