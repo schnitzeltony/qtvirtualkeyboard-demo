@@ -37,7 +37,6 @@ Item {
     }
     property string text: "" // locale C
     onTextChanged: {
-        sBox.value = sBox.valueFromText(text, Qt.locale(VirtualKeyboardSettings.locale))
         inApply = false
     }
     readonly property bool acceptableInput: hasValidInput()
@@ -69,6 +68,7 @@ Item {
     property bool inFocusKill: false
     readonly property string localeName: VirtualKeyboardSettings.locale
     onLocaleNameChanged: {
+        sBox.locale = Qt.locale(localeName)
         tField.text = tHelper.strToLocal(text)
     }
     function applyInput() {
@@ -127,7 +127,7 @@ Item {
         valueFromText: function(text, locale) {
             if (isNumeric) {
                 if(isDouble) {
-                    return Number.fromLocaleString(Qt.locale(VirtualKeyboardSettings.locale), text)*Math.pow(10, validator.decimals)
+                    return Number.fromLocaleString(locale, text)*Math.pow(10, validator.decimals)
                 }
                 else {
                     return parseInt(text, 10)
