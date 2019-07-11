@@ -39,6 +39,9 @@ Item {
     HELPERS.TextHelper {
         id: tHelper
     }
+    function hasAlteredValue() {
+        return tHelper.hasAlteredValue(isNumeric, isDouble, isDouble ? validator.decimals : 0, tField.text, localRoot.text)
+    }
 
     // bit of a hack to check for IntValidator / DoubleValidator to detect a numeric field
     readonly property bool isNumeric: validator !== undefined && 'bottom' in validator && 'top' in validator
@@ -51,7 +54,7 @@ Item {
     }
     function applyInput() {
         if(tHelper.strToCLocale(tField.text) !== localRoot.text && localRoot.hasValidInput()) {
-            if(tHelper.hasAlteredValue(isNumeric, isDouble, tField.text, localRoot.text))
+            if(hasAlteredValue())
             {
                 inApply = true
                 var newText = tHelper.strToCLocale(tField.text)
@@ -132,7 +135,7 @@ Item {
 
         onFocusChanged: {
             if(changeOnFocusLost && !inFocusKill && !focus) {
-                if(tHelper.hasAlteredValue(isNumeric, isDouble, tField.text, localRoot.text)) {
+                if(hasAlteredValue()) {
                     if(localRoot.hasValidInput()) {
                         applyInput()
                     }
@@ -160,7 +163,7 @@ Item {
             anchors.fill: parent
             color: "green"
             opacity: 0.2
-            visible: localRoot.hasValidInput() && tField.enabled && tHelper.hasAlteredValue(isNumeric, isDouble, tField.text, localRoot.text)
+            visible: localRoot.hasValidInput() && tField.enabled && hasAlteredValue()
         }
     }
 }

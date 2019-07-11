@@ -28,7 +28,7 @@ Item {
             return str
         }
     }
-    function hasAlteredValue(isNumeric, isDouble, fieldText, text) {
+    function hasAlteredValue(isNumeric, isDouble, decimals, fieldText, text) {
         var altered = false
         // Numerical?
         if(isNumeric) {
@@ -36,7 +36,7 @@ Item {
                 altered = true
             }
             else if(isDouble) {
-                altered = (Math.abs(parseFloat(tHelper.strToCLocale(fieldText)) - parseFloat(text))) >= Math.pow(10, -localRoot.validator.decimals)
+                altered = (Math.abs(parseFloat(strToCLocale(fieldText)) - parseFloat(text))) >= Math.pow(10, -decimals)
             }
             else {
                 altered = parseInt(fieldText, 10) !== parseInt(text, 10)
