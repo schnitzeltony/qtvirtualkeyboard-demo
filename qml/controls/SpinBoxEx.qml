@@ -37,6 +37,9 @@ Item {
     }
     property string text: "" // locale C
     onTextChanged: {
+        if(!inApply) {
+            sBox.value = sBox.valueFromText(text, Qt.locale())
+        }
         inApply = false
     }
     readonly property bool acceptableInput: hasValidInput()
