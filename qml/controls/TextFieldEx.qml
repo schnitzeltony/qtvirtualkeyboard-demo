@@ -6,7 +6,6 @@ import "qrc:/qml/controls" as CONTROLS
 import "qrc:/qml/helpers" as HELPERS
 
 Item {
-    id: localRoot
     Layout.alignment: Qt.AlignVCenter
     Layout.minimumWidth: tField.width
     height: parent.height
@@ -40,7 +39,13 @@ Item {
         id: tHelper
     }
     function hasAlteredValue() {
-        return tHelper.hasAlteredValue(isNumeric, isDouble, isDouble ? validator.decimals : 0, tField.text, localRoot.text)
+        var decimals = isDouble ? validator.decimals : 0
+        return tHelper.hasAlteredValue(isNumeric, isDouble, decimals, tField.text, text)
+    }
+    function hasValidInput() {
+        var bottom = isNumeric ? validator.bottom : 0
+        var top = isNumeric ? validator.top : 0
+        return tHelper.hasValidInput(isNumeric, isDouble, validator !== undefined, bottom, top, tField.acceptableInput, tField.text)
     }
 
     // bit of a hack to check for IntValidator / DoubleValidator to detect a numeric field
@@ -53,13 +58,13 @@ Item {
         tField.text = tHelper.strToLocal(text)
     }
     function applyInput() {
-        if(tHelper.strToCLocale(tField.text) !== localRoot.text && localRoot.hasValidInput()) {
+        if(tHelper.strToCLocale(tField.text) !== text && hasValidInput()) {
             if(hasAlteredValue())
             {
                 inApply = true
                 var newText = tHelper.strToCLocale(tField.text)
                 if(doApplyInput(newText)) {
-                    localRoot.text = newText
+                    text = newText
                 }
                 inApply = false
             }
@@ -70,34 +75,9 @@ Item {
         }
     }
     function discardInput() {
-        if(tField.text !== localRoot.text) {
+        if(tField.text !== text) {
             tField.text = tHelper.strToLocal(text)
         }
-    }
-    function hasValidInput() {
-        var valid = tField.acceptableInput
-        if (valid && localRoot.validator) {
-            // IntValidator / DoubleValidator
-            if(localRoot.isNumeric) {
-                if(localRoot.isDouble) {
-                    // Sometimes wrong decimal separator is accepted by DoubleValidator so check for it
-                    if(Qt.locale(VirtualKeyboardSettings.locale).decimalPoint === "," ? tField.text.includes(".") : tField.text.includes(",")) {
-                        valid = false
-                    }
-                    else {
-                        valid = localRoot.validator.top>=parseFloat(tHelper.strToCLocale(tField.text)) && localRoot.validator.bottom<=parseFloat(tHelper.strToCLocale(tField.text))
-                    }
-                }
-                else {
-                    valid = localRoot.validator.top>=parseInt(tField.text, 10) && localRoot.validator.bottom<=parseInt(tField.text, 10)
-                }
-            }
-            // RegExpValidator
-            else {
-            // TODO?
-            }
-        }
-        return valid
     }
 
     // controls
@@ -136,7 +116,7 @@ Item {
         onFocusChanged: {
             if(changeOnFocusLost && !inFocusKill && !focus) {
                 if(hasAlteredValue()) {
-                    if(localRoot.hasValidInput()) {
+                    if(hasValidInput()) {
                         applyInput()
                     }
                     else {
@@ -157,13 +137,13 @@ Item {
             anchors.fill: parent
             color: "red"
             opacity: 0.2
-            visible: localRoot.hasValidInput() === false && tField.enabled
+            visible: hasValidInput() === false && tField.enabled
         }
         Rectangle {
             anchors.fill: parent
             color: "green"
             opacity: 0.2
-            visible: localRoot.hasValidInput() && tField.enabled && hasAlteredValue()
+            visible: hasValidInput() && tField.enabled && hasAlteredValue()
         }
     }
 }

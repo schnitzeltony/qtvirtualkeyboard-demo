@@ -47,4 +47,29 @@ Item {
         }
         return altered
     }
+
+    function hasValidInput(isNumeric, isDouble, hasValidator, bottom, top, valid, text) {
+        if (valid && hasValidator) {
+            // IntValidator / DoubleValidator
+            if(isNumeric) {
+                if(isDouble) {
+                    // Sometimes wrong decimal separator is accepted by DoubleValidator so check for it
+                    if(Qt.locale(VirtualKeyboardSettings.locale).decimalPoint === "," ? text.includes(".") : text.includes(",")) {
+                        valid = false
+                    }
+                    else {
+                        valid = top>=parseFloat(strToCLocale(text)) && bottom<=parseFloat(strToCLocale(text))
+                    }
+                }
+                else {
+                    valid = top>=parseInt(text, 10) && bottom<=parseInt(text, 10)
+                }
+            }
+            // RegExpValidator
+            else {
+            // TODO?
+            }
+        }
+        return valid
+    }
 }
