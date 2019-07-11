@@ -1,9 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>qml/main.qml</file>
+        <file>qml/controls/DelayTest.qml</file>
         <file>qml/controls/DoubleValidatorEx.qml</file>
         <file>qml/controls/SpinBoxEx.qml</file>
         <file>qml/controls/TextFieldEx.qml</file>
+        <file>qml/helpers/TextHelper.qml</file>
         <file>vkeyboard/DarkKey.qml</file>
         <file>vkeyboard/layouts/de_DE/digits.fallback</file>
         <file>vkeyboard/layouts/de_DE/main.qml</file>
@@ -14,7 +16,5 @@
         <file>vkeyboard/layouts/fallback/digits.qml</file>
         <file>vkeyboard/layouts/fallback/main.qml</file>
         <file>vkeyboard/layouts/fallback/symbols.qml</file>
-        <file>qml/controls/DelayTest.qml</file>
-        <file>qml/controls/TextHelper.qml</file>
     </qresource>
 </RCC>
