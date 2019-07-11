@@ -36,7 +36,10 @@ Item {
                 altered = true
             }
             else if(isDouble) {
-                altered = (Math.abs(parseFloat(strToCLocale(fieldText)) - parseFloat(text))) >= Math.pow(10, -decimals)
+                var expVal = Math.pow(10, decimals)
+                var fieldVal = parseFloat(strToCLocale(fieldText)) * expVal
+                var textVal = parseFloat(text) * expVal
+                altered = Math.abs(fieldVal-textVal) > 0.1
             }
             else {
                 altered = parseInt(fieldText, 10) !== parseInt(text, 10)
