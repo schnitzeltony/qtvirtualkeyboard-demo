@@ -72,7 +72,6 @@ Item {
     readonly property string localeName: VirtualKeyboardSettings.locale
     onLocaleNameChanged: {
         sBox.locale = Qt.locale(localeName)
-        tField.text = tHelper.strToLocal(text)
     }
     function applyInput() {
         if(tHelper.strToCLocale(tField.text) !== text) {
