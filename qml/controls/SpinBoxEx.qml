@@ -29,7 +29,7 @@ Item {
                 sBox.from = validator.bottom
                 sBox.to = validator.top
             }
-            sBox.inputMethodHints = Qt.ImhDigitsOnly
+            sBox.inputMethodHints = Qt.ImhFormattedNumbersOnly
         }
         else {
             sBox.inputMethodHints = Qt.ImhNoAutoUppercase

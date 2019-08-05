@@ -15,7 +15,7 @@ Item {
     onValidatorChanged: {
         tField.validator = validator
         if(isNumeric) {
-            tField.inputMethodHints = Qt.ImhDigitsOnly
+            tField.inputMethodHints = Qt.ImhFormattedNumbersOnly
         }
         else {
             tField.inputMethodHints = Qt.ImhNoAutoUppercase

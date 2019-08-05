@@ -7,13 +7,13 @@
         <file>qml/controls/TextFieldEx.qml</file>
         <file>qml/helpers/TextHelper.qml</file>
         <file>vkeyboard/DarkKey.qml</file>
-        <file>vkeyboard/layouts/de_DE/digits.fallback</file>
+        <file>vkeyboard/layouts/de_DE/numbers.fallback</file>
         <file>vkeyboard/layouts/de_DE/main.qml</file>
         <file>vkeyboard/layouts/de_DE/symbols.fallback</file>
-        <file>vkeyboard/layouts/en_GB/digits.fallback</file>
+        <file>vkeyboard/layouts/en_GB/numbers.fallback</file>
         <file>vkeyboard/layouts/en_GB/main.fallback</file>
         <file>vkeyboard/layouts/en_GB/symbols.fallback</file>
-        <file>vkeyboard/layouts/fallback/digits.qml</file>
+        <file>vkeyboard/layouts/fallback/numbers.qml</file>
         <file>vkeyboard/layouts/fallback/main.qml</file>
         <file>vkeyboard/layouts/fallback/symbols.qml</file>
     </qresource>
