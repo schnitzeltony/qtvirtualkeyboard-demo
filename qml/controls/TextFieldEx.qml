@@ -22,7 +22,7 @@ Item {
     }
     property string text: "" // locale C
     onTextChanged: {
-        tField.text = tHelper.strToLocal(text)
+        tField.text = tHelper.strToLocal(text, isNumeric, isDouble)
     }
     property alias textField: tField
     property alias placeholderText: tField.placeholderText;
@@ -53,15 +53,15 @@ Item {
     property bool inFocusKill: false
     readonly property string localeName: VirtualKeyboardSettings.locale
     onLocaleNameChanged: {
-        tField.text = tHelper.strToLocal(text)
+        tField.text = tHelper.strToLocal(text, isNumeric, isDouble)
     }
     function applyInput() {
-        if(tHelper.strToCLocale(tField.text) !== text) {
+        if(tHelper.strToCLocale(tField.text, isNumeric, isDouble) !== text) {
             if(hasValidInput())
             {
                 if(hasAlteredValue())
                 {
-                    var newText = tHelper.strToCLocale(tField.text)
+                    var newText = tHelper.strToCLocale(tField.text, isNumeric, isDouble)
                     if(doApplyInput(newText)) {
                         text = newText
                     }
@@ -78,7 +78,7 @@ Item {
     }
     function discardInput() {
         if(tField.text !== text) {
-            tField.text = tHelper.strToLocal(text)
+            tField.text = tHelper.strToLocal(text, isNumeric, isDouble)
         }
     }
 
