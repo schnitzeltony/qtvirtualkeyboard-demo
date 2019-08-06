@@ -22,7 +22,6 @@ Item {
     }
     property string text: "" // locale C
     onTextChanged: {
-        inApply = false
         tField.text = tHelper.strToLocal(text)
     }
     property alias textField: tField
@@ -51,7 +50,6 @@ Item {
     // bit of a hack to check for IntValidator / DoubleValidator to detect a numeric field
     readonly property bool isNumeric: validator !== undefined && 'bottom' in validator && 'top' in validator
     readonly property bool isDouble: isNumeric && 'decimals' in validator
-    property bool inApply: false
     property bool inFocusKill: false
     readonly property string localeName: VirtualKeyboardSettings.locale
     onLocaleNameChanged: {
@@ -63,11 +61,9 @@ Item {
             {
                 if(hasAlteredValue())
                 {
-                    inApply = true
                     var newText = tHelper.strToCLocale(tField.text)
                     if(doApplyInput(newText)) {
                         text = newText
-                        inApply = false
                     }
                 }
                 // we changed text but did not change value
