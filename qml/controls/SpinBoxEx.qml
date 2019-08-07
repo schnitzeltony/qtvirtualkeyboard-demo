@@ -39,6 +39,7 @@ Item {
     onTextChanged: {
         if(!inApply) {
             sBox.value = sBox.valueFromText(text, Qt.locale())
+            tField.text = tHelper.strToLocal(text, isNumeric, isDouble)
         }
         inApply = false
     }
