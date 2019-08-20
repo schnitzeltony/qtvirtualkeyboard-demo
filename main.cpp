@@ -15,7 +15,9 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     /* do keep application locale fixed to "C". Locale changes
      * affect display only! */
-    QLocale::setDefault(QLocale("C"));
+    QLocale locale = QLocale("C");
+    locale.setNumberOptions(QLocale::OmitGroupSeparator | QLocale::RejectGroupSeparator);
+    QLocale::setDefault(locale);
     const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
