@@ -5,28 +5,24 @@ Item {
     function strToCLocale(str, isNumeric, isDouble) {
         if(isNumeric) {
             if(!isDouble) {
-                return parseInt(str, 10)
+                str = String(parseInt(str, 10))
             }
             else {
-                return str.replace(",", ".")
+                str = String(parseFloat(str.replace(",", ".")))
             }
         }
-        else {
-            return str
-        }
+        return str
     }
     function strToLocal(str, isNumeric, isDouble) {
         if(isNumeric) {
             if(!isDouble) {
-                return parseInt(str)
+                str = String(parseInt(str, 10))
             }
             else {
-                return str.replace(Qt.locale(VirtualKeyboardSettings.locale).decimalPoint === "," ? "." : ",", Qt.locale(VirtualKeyboardSettings.locale).decimalPoint)
+                str = String(parseFloat(str)).replace(Qt.locale(VirtualKeyboardSettings.locale).decimalPoint === "," ? "." : ",", Qt.locale(VirtualKeyboardSettings.locale).decimalPoint)
             }
         }
-        else {
-            return str
-        }
+        return str
     }
     function hasAlteredValue(isNumeric, isDouble, decimals, fieldText, text) {
         var altered = false
