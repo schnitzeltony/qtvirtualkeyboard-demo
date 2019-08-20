@@ -87,10 +87,12 @@ Item {
         selectByMouse: true
         inputMethodHints: Qt.ImhNoAutoUppercase
         onAccepted: {
-            applyInput()
-            inFocusKill = true
-            focus = false
-            inFocusKill = false
+            if(hasValidInput()) {
+                applyInput()
+                inFocusKill = true
+                focus = false
+                inFocusKill = false
+            }
         }
         Keys.onEscapePressed: {
             discardInput()
