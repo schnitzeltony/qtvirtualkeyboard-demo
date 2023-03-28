@@ -85,10 +85,6 @@ ApplicationWindow {
                         return true;
                     }
                 }
-                Button {
-                    id: button
-                    text: "Button"
-                }
                 // Alphanum text
                 CONTROLS.TextFieldEx {
                     text: "AlphaNum" + modelData
