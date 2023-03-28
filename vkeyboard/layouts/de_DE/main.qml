@@ -29,7 +29,7 @@
 
 import QtQuick 2.0
 import QtQuick.VirtualKeyboard 2.1
-import "qrc:/vkeyboard" as VKEYB
+import "../../" as VKEYB
 
 KeyboardLayout {
     inputMode: InputEngine.InputMode.Latin
