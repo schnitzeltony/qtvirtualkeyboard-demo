@@ -34,7 +34,7 @@ ApplicationWindow {
         ComboBox {
             id: langCombo
             width: 200
-            model: [ "en_GB", "de_DE" ]
+            model: [ "de_DE", "en_GB", "en_US", "fr_FR" ]
             onCurrentTextChanged: {
                 VirtualKeyboardSettings.locale = langCombo.currentText
             }
